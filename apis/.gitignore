@@ -1,0 +1,17 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+
+package-lock.json
+yarn.lock
+
+# environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production

@@ -1,0 +1,50 @@
+service: test-app-rn
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: dev
+  timeout: 30
+  profile: my-personal
+  environment:
+    MYSQL_HOST: 
+    MYSQL_USERNAME: 
+    MYSQL_PASSWORD: 
+    MYSQL_DATABASE: 
+    MYSQL_PORT: 3306
+
+custom:
+  apiGatewayCaching:
+    enabled: true
+
+functions:
+  EntityInfo:
+    handler: services/entity.handler
+    events:
+      - http:
+           path: /entity
+           method: get
+           cors: true
+           caching:
+            enabled: true
+            cacheKeyParameters:
+              - name: request.querystring.page
+              - name: request.querystring.limit
+              - name: request.querystring.entity_type
+              - name: request.querystring.operating_status
+              - name: request.querystring.legal_name
+              - name: request.querystring.dba_name
+              - name: request.querystring.physical_address
+              - name: request.querystring.phone
+              - name: request.querystring.usdot_number
+              - name: request.querystring.mc_mx_ff_number
+              - name: request.querystring.power_units
+              - name: request.querystring.created_dt
+              - name: request.querystring.data_source_modified_dt
+              - name: request.querystring.out_of_service_date
+
+
+plugins:
+  - serverless-offline
+  - serverless-api-gateway-caching
