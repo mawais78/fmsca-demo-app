@@ -1,4 +1,4 @@
-const { EntityInfo } = require("../config/db");
+const { EntityInfo, Sequelize } = require("../config/db");
 const { respond } = require("../helpers/common");
 
 module.exports.handler = async (event, context) => {
@@ -33,11 +33,19 @@ const getEntityInfo = async (event, context) => {
     const offset = (page - 1) * limit;
 
     const whereClause = {};
-    if (entity_type) whereClause.entity_type = entity_type;
+    if (entity_type) whereClause.entity_type = {
+      [Sequelize.Op.like]: `%${entity_type}%`
+    };
     if (operating_status) whereClause.operating_status = operating_status;
-    if (legal_name) whereClause.legal_name = legal_name;
-    if (dba_name) whereClause.dba_name = dba_name;
-    if (physical_address) whereClause.physical_address = physical_address;
+    if (legal_name) whereClause.legal_name = {
+      [Sequelize.Op.like]: `%${legal_name}%`
+    };
+    if (dba_name) whereClause.dba_name = {
+      [Sequelize.Op.like]: `%${dba_name}%`
+    };
+    if (physical_address) whereClause.physical_address = {
+      [Sequelize.Op.like]: `%${physical_address}%`
+    };
     if (phone) whereClause.phone = phone;
     if (usdot_number) whereClause.usdot_number = usdot_number;
     if (mc_mx_ff_number) whereClause.mc_mx_ff_number = mc_mx_ff_number;

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, StatusBar, ScrollView, Image, Pressable, TextInput, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, StatusBar, ScrollView, Image, Pressable, TextInput, Text, ActivityIndicator, Dimensions } from 'react-native';
 import { DataTable, DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import { connect } from 'react-redux';
 import { getData } from '../../Redux/actions/userAction';
+
+const windowWidth = Dimensions.get('window').width;
 
 const theme = {
   ...DefaultTheme,
@@ -105,6 +107,7 @@ const HomeScreen = props => {
   };
 
   const applyFilters = () => {
+    setPage(0);
     const filterParams = {
         page: 1,
         ...filters
@@ -157,13 +160,13 @@ const HomeScreen = props => {
   };
 
   const totalHeaderWidth = columns?.reduce((total, column) => total + getColumnWidth(column.key), 0);
-  const startIndex = (page - 1) * itemsPerPage + 1;
-  const endIndex = page * (Math.min(page * itemsPerPage, data.length)); 
+  const startIndex = page * itemsPerPage + 1;
+  const endIndex = (page + 1) * (Math.min((page + 1) * itemsPerPage, data.length)); 
 
   return (
     <View style={styles.rootContainer}>
       <Image style={styles.logo} source={require('../../Assets/Images/logo.png')}/>
-      {!loading && <Pressable
+      <Pressable
         onPress={() => {
           navigation.navigate('Filters', { filters, updateFilters });
         }}
@@ -171,11 +174,7 @@ const HomeScreen = props => {
         hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
       >
         <Image style={styles.filterIcon} source={require('../../Assets/Icons/filter.png')}/>
-      </Pressable>}
-      {loading ?   
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#2b7abf" />
-      </View> : 
+      </Pressable>
       <View style={{flex: 1}}>
         <TextInput
           style={styles.searchInput}
@@ -200,7 +199,10 @@ const HomeScreen = props => {
                   </DataTable.Title>
                 ))}
               </DataTable.Header>
-                {tableData.length ? tableData.map((item, key) => (
+                {
+                  loading ? <View style={[styles.loaderContainer, { width: windowWidth }]}>
+                    <ActivityIndicator size="large" color="#2b7abf" />
+                  </View> : tableData.length ? tableData.map((item, key) => (
                   <DataTable.Row key={key}>
                     {columns.map(column => (
                       <DataTable.Cell
@@ -212,7 +214,8 @@ const HomeScreen = props => {
                       </DataTable.Cell>
                     ))}
                   </DataTable.Row>
-                )) : <Text style={styles.noData}>No Records</Text>}
+                )) : <Text style={styles.noData}>No Records</Text>
+                }
             </ScrollView>
 
             <DataTable.Pagination
@@ -225,7 +228,6 @@ const HomeScreen = props => {
           </DataTable>
         </PaperProvider>
       </View>
-      }
       
     </View>
   );
